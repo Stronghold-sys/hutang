@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utang Piutang App</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+    <!-- TAMBAHAN: Link Font Ikon Google -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mobile-container">
+        
+        <!-- ================= 1. DASHBOARD ================= -->
+        <div id="page-ringkasan" class="page-view">
+            <header class="main-header">
+                <h1>Ringkasan</h1>
+                <p>Kamis, 9 Juli 2026</p>
+            </header>
+            <section class="summary-cards">
+                <div class="card piutang-card">
+                    <span class="dot"></span> PIUTANG
+                    <h2 id="total-piutang">Rp 0</h2>
+                    <p id="jumlah-orang">0 orang berutang ke kamu</p>
+                </div>
+                <div class="card saldo-card">
+                    <span>SALDO BERSIH</span>
+                    <h3 id="saldo-bersih">Rp 0</h3>
+                </div>
+            </section>
+            <section class="list-section">
+                <div class="section-title">
+                    <h2>Segera Jatuh Tempo</h2>
+                    <p>Diurutkan dari tanggal terdekat</p>
+                </div>
+                <div id="list-dashboard"></div>
+            </section>
+        </div>
+
+        <!-- ================= 2. RIWAYAT ================= -->
+        <div id="page-riwayat" class="page-view" style="display: none;">
+            <header class="main-header">
+                <h1>Riwayat Transaksi</h1>
+                <p>7 catatan • 5 belum lunas</p>
+            </header>
+            <div class="search-bar">
+                <input type="text" placeholder="Cari nama kontak...">
+            </div>
+            <div class="tabs">
+                <button class="tab active" onclick="app.filterRiwayat('Semua', this)">Semua</button>
+                <button class="tab" onclick="app.filterRiwayat('Lunas', this)">Lunas</button>
+                <button class="tab" onclick="app.filterRiwayat('Belum Lunas', this)">Belum Lunas</button>
+            </div>
+            <div id="list-riwayat" class="list-section" style="padding-top: 0;"></div>
+        </div>
+
+        <!-- ================= 3. TAMBAH/EDIT TRANSAKSI ================= -->
+        <div id="page-tambah" class="page-view" style="display: none;">
+            <header class="main-header">
+                <h1 id="form-title">Tambah Transaksi</h1>
+                <p id="form-subtitle">Isi data piutang baru</p>
+            </header>
+            <div class="form-container">
+                <label>NAMA KONTAK</label>
+                <input type="text" placeholder="">
+
+                <div id="input-jenis-transaksi">
+                    <label>JENIS TRANSAKSI</label>
+                    <button class="btn-toggle">Piutang</button>
+                </div>
+
+                <div id="input-no-hp" style="display: none;">
+                    <label>NO . HP</label>
+                    <input type="text" placeholder="">
+                </div>
+
+                <label>NOMINAL</label>
+                <input type="number" placeholder="0">
+
+                <label>TANGGAL JATUH TEMPO</label>
+                <input type="text" placeholder="Pilih tanggal" readonly onclick="app.bukaDatePicker()">
+
+                <div id="input-alamat" style="display: none;">
+                    <label>ALAMAT</label>
+                    <textarea placeholder=""></textarea>
+                </div>
+
+                <label>DESKRIPSI / CATATAN</label>
+                <textarea placeholder="Tambahkan catatan singkat..."></textarea>
+
+                <div class="form-actions" id="action-tambah">
+                    <button class="btn-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
+                    <button class="btn-simpan">Selanjutnya</button>
+                </div>
+                <div class="form-actions" id="action-edit" style="display: none;">
+                    <button class="btn-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
+                    <button class="btn-edit">Edit</button>
+                    <button class="btn-simpan">Simpan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 4. KONTAK ================= -->
+        <div id="page-kontak" class="page-view" style="display: none;">
+            <header class="main-header">
+                <h1>Kontak</h1>
+                <p>7 kontak tercatat</p>
+            </header>
+            <div id="list-kontak" class="list-section"></div>
+        </div>
+
+        <!-- ================= 5. JATUH TEMPO ================= -->
+        <div id="page-jatuhtempo" class="page-view" style="display: none;">
+            <header class="main-header">
+                <h1>Jatuh Tempo</h1>
+                <p>5 belum lunas</p>
+            </header>
+            <div id="list-jatuhtempo-page" class="list-section"></div>
+        </div>
+
+        <!-- ================= BOTTOM NAVIGATION (IKON DIPERBARUI) ================= -->
+        <nav class="bottom-nav">
+            <button id="nav-ringkasan" class="nav-item active" onclick="app.pindahHalaman('page-ringkasan', this)">
+                <span class="material-symbols-outlined">home</span><span class="nav-text">Ringkasan</span>
+            </button>
+            <button class="nav-item" onclick="app.pindahHalaman('page-riwayat', this)">
+                <span class="material-symbols-outlined">receipt_long</span><span class="nav-text">Riwayat</span>
+            </button>
+            <button class="nav-fab" onclick="app.bukaForm('Tambah Transaksi', 'Isi data piutang baru', 'tambah')">
+                <span class="plus-icon">+</span>
+            </button>
+            <button class="nav-item" onclick="app.pindahHalaman('page-kontak', this)">
+                <span class="material-symbols-outlined">person</span><span class="nav-text">Kontak</span>
+            </button>
+            <button class="nav-item" onclick="app.pindahHalaman('page-jatuhtempo', this)">
+                <span class="material-symbols-outlined">schedule</span><span class="nav-text">Jatuh Tempo</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script src="js/models.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
