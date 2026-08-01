@@ -1,0 +1,11 @@
+fastapi
+pydantic
+pydantic-settings
+supabase
+PyJWT
+httpx
+python-multipart
+slowapi
+python-dotenv
+email-validator
+openpyxl

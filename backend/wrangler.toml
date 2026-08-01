@@ -1,0 +1,17 @@
+name = "utang-piutang-backend"
+main = "worker.py"
+compatibility_date = "2024-09-25"
+compatibility_flags = ["python_workers"]
+
+[vars]
+APP_NAME = "UtangPiutangBackend"
+APP_ENV = "production"
+APP_DEBUG = "false"
+SUPABASE_URL = "https://vyhguljgtuoiwyiwtjnm.supabase.co"
+SUPABASE_JWT_AUDIENCE = "authenticated"
+SUPABASE_JWKS_URL = "https://vyhguljgtuoiwyiwtjnm.supabase.co/auth/v1/.well-known/jwks.json"
+RATE_LIMIT_REQUESTS = "100"
+RATE_LIMIT_WINDOW_SECONDS = "60"
+MAX_UPLOAD_SIZE_MB = "10"
+ALLOWED_ORIGINS = "*"
+FRONTEND_URL = "*"

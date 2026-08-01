@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "utang-piutang-frontend",
+  "compatibility_date": "2026-07-27",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "frontend"
+  },
+  "routes": [
+    {
+      "pattern": "catatid.my.id",
+      "custom_domain": true
+    }
+  ],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}

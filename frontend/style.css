@@ -7,6 +7,9 @@ body { background-color: #E8ECE6; display: flex; justify-content: center; }
 .main-header h1 { color: #1E2A22; font-size: 28px; }
 .main-header p { color: #8A9A90; font-size: 14px; margin-top: 5px; }
 
+.profile-btn, .export-btn { position: absolute; top: 25px; right: 20px; background: none; border: none; cursor: pointer; color: #1E2A22; }
+.profile-btn .material-symbols-outlined, .export-btn .material-symbols-outlined { font-size: 28px; }
+
 /* Cards & Badges */
 .summary-cards { padding: 0 20px; }
 .card { border-radius: 16px; padding: 20px; margin-bottom: 12px; }
@@ -26,7 +29,8 @@ body { background-color: #E8ECE6; display: flex; justify-content: center; }
 .group-label { font-size: 13px; color: #B38B4D; font-weight: 700; margin-bottom: 10px; margin-top: 15px; text-align: center; }
 .kontak-label { font-size: 13px; color: #8A9A90; font-weight: 700; margin-bottom: 8px; margin-top: 15px; }
 
-.list-item { background-color: white; border-radius: 16px; padding: 15px; display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; }
+.list-item { background-color: white; border-radius: 16px; padding: 15px; display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; transition: transform 0.15s ease; }
+.list-item:active { transform: scale(0.98); }
 .avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; margin-right: 15px; }
 .item-info { flex: 1; }
 .item-info h4 { color: #1E2A22; font-size: 15px; margin-bottom: 2px;}
@@ -39,7 +43,7 @@ body { background-color: #E8ECE6; display: flex; justify-content: center; }
 /* Tabs & Search */
 .search-bar { padding: 0 20px 15px; }
 .search-bar input { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #E0E0E0; background-color: #F8F9F7; outline: none; }
-.tabs { display: flex; justify-content: center; gap: 8px; padding: 0 20px 20px; }
+.tabs, .auth-tabs { display: flex; justify-content: center; gap: 8px; padding: 0 20px 20px; }
 .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #D0D5D0; background: white; color: #8A9A90; font-weight: 600; cursor: pointer; font-size: 13px;}
 .tab.active { background-color: #1E2A22; color: white; border-color: #1E2A22; }
 
@@ -47,22 +51,39 @@ body { background-color: #E8ECE6; display: flex; justify-content: center; }
 .form-container { padding: 0 20px 30px; }
 .form-container label { display: block; font-size: 11px; font-weight: bold; color: #8A9A90; margin-bottom: 5px; margin-top: 15px; letter-spacing: 0.5px;}
 .form-container input, .form-container textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #E0E0E0; background-color: white; outline: none; font-size: 14px; }
+.form-container input:disabled, .form-container textarea:disabled { background-color: #F0F2ED; color: #556057; cursor: not-allowed; border-color: #E0E4DC; }
 .form-container textarea { height: 80px; resize: none; }
-.btn-toggle { width: 100%; padding: 15px; border-radius: 12px; border: none; background-color: #EAF2EB; color: #436F54; font-weight: bold; font-size: 15px; }
+.btn-toggle { width: 100%; padding: 15px; border-radius: 12px; border: none; background-color: #EAF2EB; color: #436F54; font-weight: bold; font-size: 15px; cursor: pointer; }
+.btn-toggle.payable { background-color: #FCE8E8; color: #A34A4A; }
 .form-actions { display: flex; gap: 10px; margin-top: 30px; }
 .btn-batal { flex: 1; padding: 15px; border-radius: 12px; border: none; background-color: #F0F2ED; font-weight: bold; color: #1E2A22; cursor: pointer; }
 .btn-simpan { flex: 1; padding: 15px; border-radius: 12px; border: none; background-color: #C18A42; color: white; font-weight: bold; cursor: pointer; }
 .btn-edit { flex: 1; padding: 15px; border-radius: 12px; border: none; background-color: #436F54; color: white; font-weight: bold; cursor: pointer; }
 
-/* Ganti seluruh bagian Bottom Nav di file style.css Anda dengan ini */
-.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 400px; background-color: white; height: 75px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: 5px; }
+/* Lunas Banner Indicator */
+.lunas-banner { background-color: #DCFCE7; border: 1px solid #86EFAC; color: #166534; padding: 14px 18px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 14px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(22, 101, 52, 0.08); }
+.lunas-banner .material-symbols-outlined { font-size: 22px; color: #166534; }
+
+
+/* Bottom Nav */
+.bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 400px; background-color: white; height: 75px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: 5px; z-index: 10; }
 .nav-item { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .nav-item .material-symbols-outlined { font-size: 24px; color: #A0A0A0; }
 .nav-text { font-size: 10px; font-weight: 600; color: #A0A0A0;}
-
-/* Efek saat tombol aktif/diklik */
 .nav-item.active .material-symbols-outlined { color: #1E2A22; font-variation-settings: 'FILL' 1; }
 .nav-item.active .nav-text { color: #1E2A22; font-weight: 700; }
-
 .nav-fab { background-color: #1E2823; border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transform: translateY(-15px); cursor: pointer; }
 .plus-icon { color: white; font-size: 26px; }
+
+/* Toast Notifications */
+.toast-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 360px; z-index: 9999; }
+.toast { padding: 12px 18px; border-radius: 12px; color: white; font-size: 13px; font-weight: 600; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: fadeIn 0.3s ease; }
+.toast.success { background-color: #436F54; }
+.toast.error { background-color: #A34A4A; }
+.toast.info { background-color: #1E2823; }
+
+/* Modals */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+.modal-content { background: white; width: 100%; max-width: 360px; border-radius: 20px; padding: 25px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }

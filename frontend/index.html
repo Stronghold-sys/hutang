@@ -4,19 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utang Piutang App</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
-    <!-- TAMBAHAN: Link Font Ikon Google -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="mobile-container">
-        
-        <!-- ================= 1. DASHBOARD ================= -->
-        <div id="page-ringkasan" class="page-view">
+        <!-- Toast Notification Alert -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- ================= 0. AUTENTIKASI (LOGIN & REGISTER) ================= -->
+        <div id="page-auth" class="page-view" style="display: block;">
             <header class="main-header">
+                <h1>Utang Piutang</h1>
+                <p id="auth-subtitle">Masuk ke akun Anda</p>
+            </header>
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab active" onclick="app.switchAuthTab('login')">Masuk</button>
+                <button id="tab-register" class="tab" onclick="app.switchAuthTab('register')">Daftar</button>
+            </div>
+            
+            <!-- Form Login -->
+            <form id="form-login" class="form-container" onsubmit="app.handleLogin(event)">
+                <label>EMAIL</label>
+                <input type="email" id="login-email" placeholder="nama@email.com" required>
+                
+                <label>PASSWORD</label>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-simpan" style="width: 100%;">Masuk</button>
+                </div>
+            </form>
+
+            <!-- Form Register -->
+            <form id="form-register" class="form-container" style="display: none;" onsubmit="app.handleRegister(event)">
+                <label>NAMA LENGKAP</label>
+                <input type="text" id="reg-name" placeholder="Nama Anda" required>
+
+                <label>EMAIL</label>
+                <input type="email" id="reg-email" placeholder="nama@email.com" required>
+
+                <label>NO HP (OPSIONAL)</label>
+                <input type="text" id="reg-phone" placeholder="081234567890">
+                
+                <label>PASSWORD</label>
+                <input type="password" id="reg-password" placeholder="Minimal 6 karakter" minlength="6" required>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-simpan" style="width: 100%;">Daftar Akun</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ================= 1. DASHBOARD ================= -->
+        <div id="page-ringkasan" class="page-view" style="display: none;">
+            <header class="main-header" style="position: relative;">
+                <button class="profile-btn" onclick="app.bukaModalProfil()" title="Profil Pengguna">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
                 <h1>Ringkasan</h1>
-                <p>Kamis, 9 Juli 2026</p>
+                <p id="dashboard-date">Hari ini</p>
             </header>
             <section class="summary-cards">
                 <div class="card piutang-card">
@@ -40,12 +89,15 @@
 
         <!-- ================= 2. RIWAYAT ================= -->
         <div id="page-riwayat" class="page-view" style="display: none;">
-            <header class="main-header">
+            <header class="main-header" style="position: relative;">
+                <button class="export-btn" onclick="app.exportReport('xlsx')" title="Unduh Laporan Excel (.xlsx)">
+                    <span class="material-symbols-outlined">download</span>
+                </button>
                 <h1>Riwayat Transaksi</h1>
-                <p>7 catatan • 5 belum lunas</p>
+                <p id="riwayat-subtitle">0 catatan</p>
             </header>
             <div class="search-bar">
-                <input type="text" placeholder="Cari nama kontak...">
+                <input type="text" id="search-riwayat" placeholder="Cari catatan / nama..." oninput="app.handleSearchRiwayat(this.value)">
             </div>
             <div class="tabs">
                 <button class="tab active" onclick="app.filterRiwayat('Semua', this)">Semua</button>
@@ -62,41 +114,48 @@
                 <p id="form-subtitle">Isi data piutang baru</p>
             </header>
             <div class="form-container">
+                <div id="lunas-banner" class="lunas-banner" style="display: none;">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>TRANSAKSI SUDAH LUNAS</span>
+                </div>
+
+                <input type="hidden" id="edit-debt-id">
+                
                 <label>NAMA KONTAK</label>
-                <input type="text" placeholder="">
+                <input type="text" id="input-nama-kontak" placeholder="Nama pihak berutang/piutang">
 
                 <div id="input-jenis-transaksi">
                     <label>JENIS TRANSAKSI</label>
-                    <button class="btn-toggle">Piutang</button>
+                    <button type="button" id="btn-toggle-jenis" class="btn-toggle" onclick="app.toggleJenisTransaksi()">Piutang</button>
                 </div>
 
-                <div id="input-no-hp" style="display: none;">
+                <div id="input-no-hp">
                     <label>NO . HP</label>
-                    <input type="text" placeholder="">
+                    <input type="text" id="input-hp" placeholder="08123456789">
                 </div>
 
                 <label>NOMINAL</label>
-                <input type="number" placeholder="0">
+                <input type="text" id="input-nominal" placeholder="Rp0" inputmode="numeric" oninput="app.handleRupiahInput(this)">
 
                 <label>TANGGAL JATUH TEMPO</label>
-                <input type="text" placeholder="Pilih tanggal" readonly onclick="app.bukaDatePicker()">
+                <input type="date" id="input-due-date" placeholder="Pilih tanggal">
 
-                <div id="input-alamat" style="display: none;">
+                <div id="input-alamat">
                     <label>ALAMAT</label>
-                    <textarea placeholder=""></textarea>
+                    <textarea id="input-alamat-text" placeholder="Alamat kontak..."></textarea>
                 </div>
 
                 <label>DESKRIPSI / CATATAN</label>
-                <textarea placeholder="Tambahkan catatan singkat..."></textarea>
+                <textarea id="input-deskripsi" placeholder="Tambahkan catatan singkat..."></textarea>
 
                 <div class="form-actions" id="action-tambah">
-                    <button class="btn-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
-                    <button class="btn-simpan">Selanjutnya</button>
+                    <button type="button" class="btn-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
+                    <button type="button" class="btn-simpan" onclick="app.simpanTransaksi()">Selanjutnya</button>
                 </div>
                 <div class="form-actions" id="action-edit" style="display: none;">
-                    <button class="btn-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
-                    <button class="btn-edit">Edit</button>
-                    <button class="btn-simpan">Simpan</button>
+                    <button type="button" class="btn-batal" id="btn-edit-batal" onclick="app.pindahHalaman('page-ringkasan', document.getElementById('nav-ringkasan'))">Batal</button>
+                    <button type="button" class="btn-edit" id="btn-edit-bayar" onclick="app.bukaModalBayar()">Bayar</button>
+                    <button type="button" class="btn-simpan" id="btn-edit-simpan" onclick="app.simpanEditTransaksi()">Simpan</button>
                 </div>
             </div>
         </div>
@@ -105,7 +164,7 @@
         <div id="page-kontak" class="page-view" style="display: none;">
             <header class="main-header">
                 <h1>Kontak</h1>
-                <p>7 kontak tercatat</p>
+                <p id="kontak-subtitle">0 kontak tercatat</p>
             </header>
             <div id="list-kontak" class="list-section"></div>
         </div>
@@ -114,13 +173,52 @@
         <div id="page-jatuhtempo" class="page-view" style="display: none;">
             <header class="main-header">
                 <h1>Jatuh Tempo</h1>
-                <p>5 belum lunas</p>
+                <p id="jatuhtempo-subtitle">0 belum lunas</p>
             </header>
             <div id="list-jatuhtempo-page" class="list-section"></div>
         </div>
 
-        <!-- ================= BOTTOM NAVIGATION (IKON DIPERBARUI) ================= -->
-        <nav class="bottom-nav">
+        <!-- ================= MODAL PEMBAYARAN ================= -->
+        <div id="modal-bayar" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <h3>Catat Pembayaran</h3>
+                <p id="modal-bayar-debt-title">Utang/Piutang</p>
+                <form onsubmit="app.prosesPembayaran(event)" class="form-container" style="padding: 10px 0 0;">
+                    <label>NOMINAL PEMBAYARAN</label>
+                    <input type="text" id="bayar-nominal" placeholder="Rp0" inputmode="numeric" oninput="app.handleRupiahInput(this)" required>
+
+                    <label>METODE PEMBAYARAN</label>
+                    <input type="text" id="bayar-metode" placeholder="Transfer, Tunai, QRIS..." value="Tunai">
+
+                    <label>CATATAN</label>
+                    <textarea id="bayar-catatan" placeholder="Catatan pembayaran..."></textarea>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-batal" onclick="app.tutupModalBayar()">Batal</button>
+                        <button type="submit" class="btn-simpan">Bayar Sekarang</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ================= MODAL PROFIL & AKUN ================= -->
+        <div id="modal-profil" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <h3>Profil & Akun</h3>
+                <div id="profil-info" style="margin: 15px 0;">
+                    <p><strong>Email:</strong> <span id="user-email-text">-</span></p>
+                    <p><strong>Nama:</strong> <span id="user-name-text">-</span></p>
+                </div>
+                <div class="form-actions" style="flex-direction: column; gap: 10px;">
+                    <button type="button" class="btn-edit" onclick="app.bukaFormUbahPassword()">Ubah Password</button>
+                    <button type="button" class="btn-batal" onclick="app.logoutUser()" style="background-color: #FCE8E8; color: #A34A4A;">Keluar (Logout)</button>
+                    <button type="button" class="btn-batal" onclick="app.tutupModalProfil()">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BOTTOM NAVIGATION ================= -->
+        <nav id="app-bottom-nav" class="bottom-nav" style="display: none;">
             <button id="nav-ringkasan" class="nav-item active" onclick="app.pindahHalaman('page-ringkasan', this)">
                 <span class="material-symbols-outlined">home</span><span class="nav-text">Ringkasan</span>
             </button>
@@ -138,8 +236,12 @@
             </button>
         </nav>
     </div>
-    
-    <script src="js/models.js"></script>
-    <script src="js/app.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js?v=1.0.2"></script>
+    <script src="js/api.js?v=1.0.2"></script>
+    <script src="js/models.js?v=1.0.2"></script>
+    <script src="js/app.js?v=1.0.2"></script>
 </body>
 </html>
